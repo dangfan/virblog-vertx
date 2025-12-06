@@ -1,0 +1,6 @@
+.gradle/
+build/
+.kotlin/
+data/*.db
+*.log
+fonts

@@ -1,0 +1,25 @@
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+    font-weight: 800;
+}
+
+blockquote {
+    font-style: italic;
+}
+
+header.masthead .post-heading .meta {
+    font-style: italic;
+}
+
+header.masthead .post-heading .meta {
+    font-family: 'Lora', 'Times New Roman', serif;
+}
+
+.pager li > a,
+.pager li > span {
+    font-family: 'Open Sans', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+}

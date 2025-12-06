@@ -1,0 +1,72 @@
+@import url("//cdnjs.cloudflare.com/ajax/libs/Han/3.3.0/han.min.css");
+
+h-hangable:lang(zh-Hans)>h-cs h-char.bd-end {
+    line-height: 1.4;
+}
+
+article>p:lang(zh-Hant),
+article>ul:lang(zh-Hant),
+article>ol:lang(zh-Hant) {
+    font-family: "Biaodian Pro Serif CNS", "Numeral LF Serif", Georgia, "Times New Roman", "Zhuyin Kaiti", "Han Songti", serif;
+}
+
+article>p:lang(zh-Hans),
+article>ul:lang(zh-Hans),
+article>ol:lang(zh-Hans) {
+    font-family: "Biaodian Pro Serif GB", "Numeral LF Serif", Georgia, "Times New Roman", "Han Songti GB", serif;
+}
+
+article p {
+    text-indent: 2em;
+}
+
+article p,
+article ul,
+article ol {
+    margin: 0 0 0.5em;
+}
+
+article ol,
+article ul {
+    list-style-position: inside;
+}
+
+article ul>li {
+    text-indent: 1em;
+    list-style-type: none;
+    position: relative;
+}
+
+article ul>li:before {
+    content: "\2219";
+    font-size: 2.5em;
+    line-height: 0;
+    position: absolute;
+    top: .27em;
+    left: -.45em;
+}
+
+article h1,
+article h2,
+article h3,
+article h4,
+article h5,
+article h6 {
+    margin-top: 1em;
+    margin-bottom: 1.5em;
+    border-bottom: 1px solid #dcd6ca;
+}
+
+blockquote {
+    margin: 1em 4em 1em 4em !important;
+}
+
+.meta:lang(zh-Hant),
+.post-meta:lang(zh-Hant) {
+    font-family: "Biaodian Pro Serif CNS", "Numeral LF Serif", Georgia, "Times New Roman", "Zhuyin Kaiti", "Han Kaiti", cursive, serif;
+}
+
+.meta:lang(zh-Hans),
+.post-meta:lang(zh-Hans) {
+    font-family: "Biaodian Pro Serif GB", "Numeral LF Serif", Georgia, "Times New Roman", "Han Kaiti GB", cursive, serif;
+}
