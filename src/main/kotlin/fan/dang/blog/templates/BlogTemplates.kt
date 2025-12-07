@@ -33,6 +33,10 @@ object BlogTemplates {
             .replace("\"", "&quot;")
     }
 
+    private fun stripHtml(text: String): String {
+        return text.replace(Regex("<[^>]*>"), "").trim()
+    }
+
     fun mainLayout(
         title: String,
         headerImg: String,
@@ -279,7 +283,7 @@ object BlogTemplates {
         val ogUrl = if (baseUrl.isNotEmpty()) "$baseUrl/$lang/posts/${post.slug}" else ""
         val ogImage = MarkdownParser.extractFirstImage(post.content.localize(lang)) 
             ?: post.headerImage.ifEmpty { "" }
-        val ogDescription = MarkdownParser.parse(post.excerpt.localize(lang))
+        val ogDescription = stripHtml(MarkdownParser.parse(post.excerpt.localize(lang)))
 
         return mainLayout(title, post.headerImage, lang, heading, content, "/posts/${post.slug}", "", ogUrl, ogImage, ogDescription)
     }
@@ -304,7 +308,7 @@ object BlogTemplates {
         val ogUrl = if (baseUrl.isNotEmpty()) "$baseUrl/$lang/pages/${post.slug}" else ""
         val ogImage = MarkdownParser.extractFirstImage(post.content.localize(lang)) 
             ?: post.headerImage.ifEmpty { "" }
-        val ogDescription = MarkdownParser.parse(post.excerpt.localize(lang))
+        val ogDescription = stripHtml(MarkdownParser.parse(post.excerpt.localize(lang)))
 
         return mainLayout(title, post.headerImage, lang, heading, content, "/pages/${post.slug}", "", ogUrl, ogImage, ogDescription)
     }
