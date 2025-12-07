@@ -1,5 +1,5 @@
 # Multi-stage build for Kotlin/Vert.x application
-FROM gradle:8.5-jdk21 AS builder
+FROM docker.io/gradle:8.5-jdk21 AS builder
 
 WORKDIR /app
 
@@ -17,7 +17,9 @@ COPY src ./src
 RUN gradle jar --no-daemon
 
 # Runtime stage
-FROM eclipse-temurin:21-jre-alpine
+FROM docker.io/eclipse-temurin:21-jre
+
+RUN apt-get update && apt-get install -y libopencc-dev
 
 WORKDIR /app
 

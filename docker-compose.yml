@@ -7,15 +7,16 @@ services:
       context: .
       dockerfile: Dockerfile
     container_name: virblog-app
+    image: localhost/virblog-app:latest
     restart: unless-stopped
     ports:
-      - "8080:8080"
+      - "127.0.0.1:8080:8080"
     volumes:
       # Persist database
       - ./data:/app/data
       # Fonts directory
       - ./fonts:/app/fonts
-      # Override configuration (optional - create this file to override settings)
+      # Configuration
       - ./application.conf:/app/application.conf:ro
     environment:
       - JAVA_OPTS=-Xmx512m -Xms256m
