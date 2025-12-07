@@ -47,10 +47,10 @@ object OpenCC {
 
     fun convertWithQuotes(content: String): String {
         var result = simplifiedToTraditional(content)
-        result = result.replace('"', '「')
-        result = result.replace('"', '」')
-        result = result.replace('\'', '『')
-        result = result.replace('\'', '』')
+        result = result.replace('“', '「')
+        result = result.replace('”', '」')
+        result = result.replace('‘', '『')
+        result = result.replace('’', '』')
         return result
     }
 }
