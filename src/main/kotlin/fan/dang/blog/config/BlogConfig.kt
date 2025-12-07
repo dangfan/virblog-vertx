@@ -7,7 +7,8 @@ data class BlogConfig(
     val dbPath: String = "data/virblog.db",
     val jwtKey: String = "123456",
     val availableLocales: List<String> = listOf("zh-Hans", "zh-Hant", "en"),
-    val port: Int = 8080
+    val port: Int = 8080,
+    val baseUrl: String = ""
 ) {
     companion object {
         fun load(): BlogConfig {
@@ -18,7 +19,8 @@ data class BlogConfig(
                 jwtKey = props.getProperty("jwt.key", "123456"),
                 availableLocales = props.getProperty("locales", "zh-Hans,zh-Hant,en")
                     .split(",").map { it.trim() },
-                port = props.getProperty("port", "8080").toInt()
+                port = props.getProperty("port", "8080").toInt(),
+                baseUrl = props.getProperty("base.url", "")
             )
         }
 

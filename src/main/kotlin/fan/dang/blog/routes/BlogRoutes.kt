@@ -78,6 +78,7 @@ class BlogRoutes(
         try {
             val lang = extractLang(ctx)
             val page = ctx.queryParam("page").firstOrNull()?.toIntOrNull() ?: 1
+            val queryString = ctx.request().query() ?: ""
 
             if (page <= 0) {
                 ctx.response()
@@ -88,7 +89,7 @@ class BlogRoutes(
             }
 
             val (posts, postCount) = postService.listByPage(page, PostType.Post, PostStatus.Published)
-            val html = BlogTemplates.indexPage(posts, page, postCount, lang)
+            val html = BlogTemplates.indexPage(posts, page, postCount, lang, queryString)
 
             ctx.response()
                 .putHeader("Content-Type", "text/html; charset=utf-8")
@@ -113,7 +114,7 @@ class BlogRoutes(
             }
 
             val tags = tagService.getBySlugs(post.tags)
-            val html = BlogTemplates.postPage(post, tags, lang)
+            val html = BlogTemplates.postPage(post, tags, lang, config.baseUrl)
 
             ctx.response()
                 .putHeader("Content-Type", "text/html; charset=utf-8")
@@ -141,7 +142,7 @@ class BlogRoutes(
                 return
             }
 
-            val html = BlogTemplates.pagePage(post, lang)
+            val html = BlogTemplates.pagePage(post, lang, config.baseUrl)
 
             ctx.response()
                 .putHeader("Content-Type", "text/html; charset=utf-8")
@@ -160,6 +161,7 @@ class BlogRoutes(
             val lang = ctx.pathParam("lang") ?: extractLang(ctx)
             val slug = ctx.pathParam("slug") ?: ""
             val page = ctx.queryParam("page").firstOrNull()?.toIntOrNull() ?: 1
+            val queryString = ctx.request().query() ?: ""
 
             if (page <= 0) {
                 ctx.response()
@@ -179,7 +181,7 @@ class BlogRoutes(
             }
 
             val (posts, postCount) = postService.listByTag(slug, page)
-            val html = BlogTemplates.tagPage(tag, posts, page, postCount, lang)
+            val html = BlogTemplates.tagPage(tag, posts, page, postCount, lang, queryString)
 
             ctx.response()
                 .putHeader("Content-Type", "text/html; charset=utf-8")

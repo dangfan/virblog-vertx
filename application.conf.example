@@ -18,3 +18,6 @@ jwt.key=your-secure-random-secret-key-here
 
 # Available locales
 locales=zh-Hans,zh-Hant,en
+
+# Base URL for Open Graph metadata (e.g., https://blog.example.com)
+base.url=https://blog.example.com

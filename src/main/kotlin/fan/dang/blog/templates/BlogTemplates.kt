@@ -39,18 +39,33 @@ object BlogTemplates {
         lang: String,
         heading: String,
         content: String,
-        currentPath: String = ""
+        currentPath: String = "",
+        queryString: String = "",
+        ogUrl: String = "",
+        ogImage: String = ""
     ): String {
         val bgImage = headerImg.ifEmpty { "https://img.dang.fan/home-bg.jpg" }
         val blogrolls = BlogOptions.blogrolls
 
+        val ogMetaTags = if (ogUrl.isNotEmpty()) {
+            val ogImageTag = if (ogImage.isNotEmpty()) {
+                """<meta property="og:image" content="${escapeHtml(ogImage)}">"""
+            } else ""
+            """
+        <meta property="og:title" content="${escapeHtml(title)}">
+        <meta property="og:type" content="article">
+        <meta property="og:url" content="${escapeHtml(ogUrl)}">
+        $ogImageTag"""
+        } else ""
+
         return """
 <!DOCTYPE html>
-<html lang="$lang" class="han-init">
+<html prefix="og: https://ogp.me/ns#" lang="$lang" class="han-init">
     <head>
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
         <title>${escapeHtml(title)}</title>
+        $ogMetaTags
         <link href="/assets/stylesheets/bootstrap.min.css" rel="stylesheet">
         <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css" rel="stylesheet">
         <link href="https://fonts.loli.net/css?family=Lora:400,700,400italic,700italic" rel="stylesheet">
@@ -62,7 +77,7 @@ object BlogTemplates {
     <body>
         <nav class="navbar navbar-expand-lg navbar-light fixed-top" id="mainNav">
             <div class="container">
-                <button class="navbar-toggler navbar-toggler-right" type="button" data-toggle="collapse" data-target="#navbarResponsive" aria-controls="navbarResponsive" aria-expanded="false" aria-label="Toggle navigation">
+                <button class="navbar-toggler navbar-toggler-right" type="button" data-bs-toggle="collapse" data-bs-target="#navbarResponsive" aria-controls="navbarResponsive" aria-expanded="false" aria-label="Toggle navigation">
                     <span class="fas fa-bars"></span>
                 </button>
                 <div class="collapse navbar-collapse" id="navbarResponsive">
@@ -78,7 +93,8 @@ object BlogTemplates {
                     <ul class="navbar-nav ml-auto">
                         ${BlogOptions.locales.entries.joinToString("\n") { (id, name) ->
                             val url = if (currentPath.isEmpty()) "/$id/" else "/$id$currentPath"
-                            """<li class="nav-item"><a class="nav-link" href="$url">$name</a></li>"""
+                            val fullUrl = if (queryString.isNotEmpty()) "$url?$queryString" else url
+                            """<li class="nav-item"><a class="nav-link" href="$fullUrl">$name</a></li>"""
                         }}
                     </ul>
                 </div>
@@ -143,7 +159,7 @@ object BlogTemplates {
         <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.11.1/highlight.min.js"></script>
         <script>
             ${'$'}('p:has(img)').css('text-align', 'center');
-            hljs.initHighlightingOnLoad();
+            hljs.highlightAll();
         </script>
         ${if (lang.startsWith("zh")) """
             <script>
@@ -169,7 +185,7 @@ object BlogTemplates {
         """.trimIndent()
     }
 
-    fun indexPage(posts: List<PostEntity>, pageNumber: Int, postCount: Int, lang: String): String {
+    fun indexPage(posts: List<PostEntity>, pageNumber: Int, postCount: Int, lang: String, queryString: String = ""): String {
         val blogName = BlogOptions.blogName.localize(lang)
         val blogDescription = BlogOptions.blogDescription.localize(lang)
 
@@ -213,10 +229,10 @@ object BlogTemplates {
             </ul>
         """.trimIndent()
 
-        return mainLayout(blogName, "", lang, heading, content)
+        return mainLayout(blogName, "", lang, heading, content, "", queryString)
     }
 
-    fun postPage(post: PostEntity, tags: List<PostTagEntity>, lang: String): String {
+    fun postPage(post: PostEntity, tags: List<PostTagEntity>, lang: String, baseUrl: String = ""): String {
         val title = "${post.title.localize(lang)} - ${BlogOptions.blogName.localize(lang)}"
 
         val tagsHtml = tags.mapIndexed { index, tag ->
@@ -254,10 +270,15 @@ object BlogTemplates {
             $disqusHtml
         """.trimIndent()
 
-        return mainLayout(title, post.headerImage, lang, heading, content, "/posts/${post.slug}")
+        // Extract OG metadata
+        val ogUrl = if (baseUrl.isNotEmpty()) "$baseUrl/$lang/posts/${post.slug}" else ""
+        val ogImage = MarkdownParser.extractFirstImage(post.content.localize(lang)) 
+            ?: post.headerImage.ifEmpty { "" }
+
+        return mainLayout(title, post.headerImage, lang, heading, content, "/posts/${post.slug}", "", ogUrl, ogImage)
     }
 
-    fun pagePage(post: PostEntity, lang: String): String {
+    fun pagePage(post: PostEntity, lang: String, baseUrl: String = ""): String {
         val title = "${post.title.localize(lang)} - ${BlogOptions.blogName.localize(lang)}"
 
         val heading = """
@@ -273,10 +294,15 @@ object BlogTemplates {
             </article>
         """.trimIndent()
 
-        return mainLayout(title, post.headerImage, lang, heading, content, "/pages/${post.slug}")
+        // Extract OG metadata
+        val ogUrl = if (baseUrl.isNotEmpty()) "$baseUrl/$lang/pages/${post.slug}" else ""
+        val ogImage = MarkdownParser.extractFirstImage(post.content.localize(lang)) 
+            ?: post.headerImage.ifEmpty { "" }
+
+        return mainLayout(title, post.headerImage, lang, heading, content, "/pages/${post.slug}", "", ogUrl, ogImage)
     }
 
-    fun tagPage(tag: PostTagEntity, posts: List<PostEntity>, pageNumber: Int, postCount: Int, lang: String): String {
+    fun tagPage(tag: PostTagEntity, posts: List<PostEntity>, pageNumber: Int, postCount: Int, lang: String, queryString: String = ""): String {
         val title = "${tag.name.localize(lang)} - ${BlogOptions.blogName.localize(lang)}"
         val blogName = BlogOptions.blogName.localize(lang)
 
@@ -321,7 +347,7 @@ object BlogTemplates {
             </ul>
         """.trimIndent()
 
-        return mainLayout(title, "", lang, heading, content)
+        return mainLayout(title, "", lang, heading, content, "", queryString)
     }
 
     fun notFoundPage(lang: String): String {

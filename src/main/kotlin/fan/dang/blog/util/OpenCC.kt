@@ -15,15 +15,23 @@ interface OpenCCLibrary : Library {
 }
 
 object OpenCC {
-    private var library: OpenCCLibrary? = null
-    private var opencc: Pointer? = null
-
-    init {
+    private val library: OpenCCLibrary? by lazy {
         try {
-            library = Native.load("opencc", OpenCCLibrary::class.java)
-            opencc = library?.opencc_open("s2t.json")
-        } catch (e: Exception) {
-            println("Warning: OpenCC library not available. Chinese conversion will be disabled.")
+            val lib = Native.load("opencc", OpenCCLibrary::class.java) as OpenCCLibrary
+            println("OpenCC library loaded successfully")
+            lib
+        } catch (e: Throwable) {
+            println("Warning: OpenCC library not available (${e.message}). Chinese conversion will be disabled.")
+            null
+        }
+    }
+
+    private val opencc: Pointer? by lazy {
+        try {
+            library?.opencc_open("s2t.json")
+        } catch (e: Throwable) {
+            println("Warning: Failed to initialize OpenCC converter (${e.message})")
+            null
         }
     }
 
