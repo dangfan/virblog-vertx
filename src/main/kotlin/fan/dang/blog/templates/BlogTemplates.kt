@@ -42,20 +42,25 @@ object BlogTemplates {
         currentPath: String = "",
         queryString: String = "",
         ogUrl: String = "",
-        ogImage: String = ""
+        ogImage: String = "",
+        ogDescription: String = ""
     ): String {
         val bgImage = headerImg.ifEmpty { "https://img.dang.fan/home-bg.jpg" }
         val blogrolls = BlogOptions.blogrolls
 
         val ogMetaTags = if (ogUrl.isNotEmpty()) {
             val ogImageTag = if (ogImage.isNotEmpty()) {
-                """<meta property="og:image" content="${escapeHtml(ogImage)}">"""
+                """<meta property="og:image" content="${escapeHtml(ogImage)}">"""  
+            } else ""
+            val ogDescriptionTag = if (ogDescription.isNotEmpty()) {
+                """<meta property="og:description" content="${escapeHtml(ogDescription)}">"""  
             } else ""
             """
         <meta property="og:title" content="${escapeHtml(title)}">
         <meta property="og:type" content="article">
         <meta property="og:url" content="${escapeHtml(ogUrl)}">
-        $ogImageTag"""
+        $ogImageTag
+        $ogDescriptionTag"""
         } else ""
 
         return """
@@ -274,8 +279,9 @@ object BlogTemplates {
         val ogUrl = if (baseUrl.isNotEmpty()) "$baseUrl/$lang/posts/${post.slug}" else ""
         val ogImage = MarkdownParser.extractFirstImage(post.content.localize(lang)) 
             ?: post.headerImage.ifEmpty { "" }
+        val ogDescription = MarkdownParser.parse(post.excerpt.localize(lang))
 
-        return mainLayout(title, post.headerImage, lang, heading, content, "/posts/${post.slug}", "", ogUrl, ogImage)
+        return mainLayout(title, post.headerImage, lang, heading, content, "/posts/${post.slug}", "", ogUrl, ogImage, ogDescription)
     }
 
     fun pagePage(post: PostEntity, lang: String, baseUrl: String = ""): String {
@@ -298,8 +304,9 @@ object BlogTemplates {
         val ogUrl = if (baseUrl.isNotEmpty()) "$baseUrl/$lang/pages/${post.slug}" else ""
         val ogImage = MarkdownParser.extractFirstImage(post.content.localize(lang)) 
             ?: post.headerImage.ifEmpty { "" }
+        val ogDescription = MarkdownParser.parse(post.excerpt.localize(lang))
 
-        return mainLayout(title, post.headerImage, lang, heading, content, "/pages/${post.slug}", "", ogUrl, ogImage)
+        return mainLayout(title, post.headerImage, lang, heading, content, "/pages/${post.slug}", "", ogUrl, ogImage, ogDescription)
     }
 
     fun tagPage(tag: PostTagEntity, posts: List<PostEntity>, pageNumber: Int, postCount: Int, lang: String, queryString: String = ""): String {
